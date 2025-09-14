@@ -3,7 +3,8 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 // 1. Define the context shape
 type OnboardingContextType = {
-    hasSeenOnboarding: boolean | null; // null = still loading
+    hasSeenOnboarding: boolean;
+    loading: boolean;
     markOnboardingSeen: () => Promise<void>;
 };
 
@@ -12,12 +13,21 @@ const OnboardingContext = createContext<OnboardingContextType | undefined>(undef
 
 // 3. Create the provider
 export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean | null>(false);
+    const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean>(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const loadFlag = async () => {
-            const stored = await AsyncStorage.getItem("hasSeenOnboarding");
-            setHasSeenOnboarding(JSON.parse(stored ?? "false"));
+            try {
+                const stored = await AsyncStorage.getItem("hasSeenOnboarding");
+                if (stored !== null) {
+                    setHasSeenOnboarding(JSON.parse(stored));
+                }
+            } catch (e) {
+                console.error("Failed to load onboarding flag:", e);
+            } finally {
+                setLoading(false);
+            }
         };
 
         loadFlag();
@@ -29,7 +39,7 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     };
 
     return (
-        <OnboardingContext.Provider value={{ hasSeenOnboarding, markOnboardingSeen }}>
+        <OnboardingContext.Provider value={{ hasSeenOnboarding, loading, markOnboardingSeen }}>
             {children}
         </OnboardingContext.Provider>
     );

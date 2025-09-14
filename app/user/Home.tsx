@@ -1,19 +1,18 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from "react";
 
-
 import { createOrder } from "@/api/order";
 import ActiveOrder from "@/components/ActiveOrder";
+import Button from '@/components/Button';
 import Input from "@/components/Input";
 import LocationInput from "@/components/LocationInput";
 import Map from "@/components/Map";
 import MultipleInputs from "@/components/MultipleInputs";
 import SwipeablePanelLayout from "@/components/SwipeablePanelLayout";
 import useUserLocation from "@/hooks/useUserLocation";
-import { OrderFormInputs } from "@/types/order";
+import { CreateOrderPayload, OrderFormInputs } from "@/types/order";
 import { baseStyles, colors } from "@/utils/baseStyles";
 import { getAddressFromCoords } from "@/utils/location";
-import { Button } from "@react-navigation/elements";
 import { FormProvider, useForm } from "react-hook-form";
 import {
     Platform,
@@ -26,13 +25,19 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { LatLng } from "react-native-maps";
 
+// ✅ type for suggestion items
+type LocationSuggestion = {
+    lat: number;
+    lon: number;
+    displayName: string;
+};
+
 const Home: React.FC = () => {
-    const methods = useForm();
+    const methods = useForm<OrderFormInputs>();
     const { control, setValue, handleSubmit, formState: { errors } } = methods;
     const { loading: loadingUserLocation } = useUserLocation();
 
     const [loading, setLoading] = useState(false);
-
 
     const [fromMarkerPos, setFromMarkerPos] = useState<LatLng>({ latitude: 1, longitude: 1 });
     const [toMarkerPos, setToMarkerPos] = useState<LatLng>({ latitude: 1, longitude: 1 });
@@ -41,26 +46,26 @@ const Home: React.FC = () => {
     const [toLocation, setToLocation] = useState<string>("");
 
     const [activeLocation, setActiveLocation] = useState<"from" | "to">("from");
-    const [showLocationScreen, setShowLocationScreen] = useState(false)
+    const [showLocationScreen, setShowLocationScreen] = useState(false);
 
-    const [locationsSuggestions, setLocationsSuggestions] = useState()
+    const [locationsSuggestions, setLocationsSuggestions] = useState<LocationSuggestion[]>([]);
 
-    const handleCreateOrder = async (data: OrderFormInputs) => {
-        const coords = { from: fromMarkerPos, to: toMarkerPos }
+    const handleCreateOrder = async (data: CreateOrderPayload) => {
+        const coords = { from: fromMarkerPos, to: toMarkerPos };
 
         setLoading(true);
         try {
             await createOrder(data, coords);
-            methods.reset()
-        } catch (err: any) {
+            methods.reset();
+        } catch (err) {
             console.error(err || "Failed to create order");
         } finally {
             setLoading(false);
         }
     };
 
-    const handleMarkerPress = async (location) => {
-        const position = { latitude: location.lat, longitude: location.lon };
+    const handleMarkerPress = async (location: LocationSuggestion) => {
+        const position: LatLng = { latitude: location.lat, longitude: location.lon };
 
         if (activeLocation === "from") {
             setFromMarkerPos(position);
@@ -73,20 +78,17 @@ const Home: React.FC = () => {
         }
     };
 
-
-    if (loadingUserLocation) return <Text>loading....</Text>
-    console.log(showLocationScreen);
+    if (loadingUserLocation) return <Text>loading....</Text>;
 
     return (
         <SafeAreaView style={styles.safeArea}>
-
-            {
-                !showLocationScreen && <KeyboardAwareScrollView
+            {!showLocationScreen && (
+                <KeyboardAwareScrollView
                     style={{ flex: 1 }}
                     contentContainerStyle={styles.container}
                     keyboardShouldPersistTaps="handled"
                     enableOnAndroid
-                    extraScrollHeight={Platform.OS === "ios" ? 40 : 20} // 👈 reduces the push
+                    extraScrollHeight={Platform.OS === "ios" ? 40 : 20}
                 >
                     <Text style={[baseStyles.heading, { color: colors.primary, marginBottom: 10 }]}>Kapatin</Text>
                     <FormProvider {...methods}>
@@ -97,10 +99,9 @@ const Home: React.FC = () => {
                                 name="to"
                                 placeholder="Where to?"
                                 rules={{ required: "required" }}
-                                editable={false} // keep this to prevent keyboard
+                                editable={false}
                                 onPress={() => setShowLocationScreen(true)}
-                                pointerEvents="none" // ⬅️ make it ignore touch
-
+                                pointerEvents="none"
                             />
                         </TouchableOpacity>
 
@@ -169,9 +170,9 @@ const Home: React.FC = () => {
                         </View>
                     </FormProvider>
                 </KeyboardAwareScrollView>
-            }
-            {
-                showLocationScreen &&
+            )}
+
+            {showLocationScreen && (
                 <SwipeablePanelLayout
                     expandedHeight={0.8 * 800}
                     collapsedHeight={0.45 * 800}
@@ -197,7 +198,7 @@ const Home: React.FC = () => {
                                 setMarkerPos={setFromMarkerPos}
                                 errors={errors}
                                 name="from"
-                                label='From'
+                                label="From"
                                 placeholder="From"
                                 rules={{ required: " required" }}
                                 onFocus={() => setActiveLocation('from')}
@@ -208,10 +209,11 @@ const Home: React.FC = () => {
                                 location={toLocation}
                                 control={control}
                                 setValue={setValue}
-                                setMarkerPos={setToLocation}
+                                // ✅ fixed wrong setter
+                                setMarkerPos={setToMarkerPos}
                                 errors={errors}
                                 name="to"
-                                label='To'
+                                label="To"
                                 placeholder="To"
                                 rules={{ required: " required" }}
                                 onFocus={() => setActiveLocation('to')}
@@ -219,7 +221,7 @@ const Home: React.FC = () => {
                             />
 
                             <View style={{ flex: 1 }}>
-                                {locationsSuggestions?.map((location, index) => {
+                                {locationsSuggestions.map((location, index) => {
                                     const [line1, ...rest] = location.displayName.split(', ');
                                     const line2 = rest.join(', ');
 
@@ -235,18 +237,19 @@ const Home: React.FC = () => {
                                                     <Text style={styles.line2}>{line2}</Text>
                                                 </View>
                                             </TouchableOpacity>
-                                            {index !== locationsSuggestions?.length - 1 && <View style={styles.separator} />}
+                                            {index !== locationsSuggestions.length - 1 && <View style={styles.separator} />}
                                         </View>
                                     );
                                 })}
                             </View>
 
-                            <View style={{ marginBottom: 60 }}><Button disabled={false} title={'Done'} onPress={() => setShowLocationScreen(false)} /></View>
+                            <View style={{ marginBottom: 60 }}>
+                                <Button disabled={false} title="Done" onPress={() => setShowLocationScreen(false)} />
+                            </View>
                         </View>
                     }
                 />
-            }
-
+            )}
 
             {!showLocationScreen && <ActiveOrder />}
         </SafeAreaView>

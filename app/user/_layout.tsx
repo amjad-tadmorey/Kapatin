@@ -11,8 +11,8 @@ import HomeActiveIcon from '../../assets/home-active.svg';
 import HomeIcon from '../../assets/home.svg';
 import ProfileActiveIcon from '../../assets/profile-active.svg';
 import ProfileIcon from '../../assets/profile.svg';
-import Activity from "./screens/Activity";
-import Home from "./screens/Home";
+import Activity from "./Activity";
+import Home from "./Home";
 
 
 const Tab = createBottomTabNavigator();

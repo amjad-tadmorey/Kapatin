@@ -8,17 +8,17 @@ const AuthWrapper: React.FC = () => {
     const router = useRouter();
     const user = useSelector((state: RootState) => state.auth.user);
     const token = useSelector((state: RootState) => state.auth.token);
-    const { hasSeenOnboarding } = useOnboarding();
-    console.log(hasSeenOnboarding);
-    
+
+    const { hasSeenOnboarding, loading } = useOnboarding();
+
     useEffect(() => {
         if (!hasSeenOnboarding) {
             router.replace("/onboarding");
         } else if (!token) {
             router.replace("/login");
-        } else if (user.type === "user") {
+        } else if (user?.type === "user") {
             router.replace("/user");
-        } else if (user.type === "driver") {
+        } else if (user?.type === "driver") {
             router.replace("/driver");
         }
     }, [token, user, hasSeenOnboarding]);

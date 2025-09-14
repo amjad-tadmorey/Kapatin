@@ -7,19 +7,18 @@ import { useDispatch, useSelector } from "react-redux";
 export default function useUserLocation() {
     const dispatch = useDispatch();
     const location = useSelector((state: RootState) => state.location);
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // ✅ If location is already in Redux, do nothing
-        if (location.latitude !== null && location.longitude !== null) return;
-
         const getLocation = async () => {
             try {
-                setLoading(true)
+                setLoading(true);
+
                 // 1️⃣ Request permission
                 const { status } = await Location.requestForegroundPermissionsAsync();
                 if (status !== "granted") {
                     console.log("Permission to access location was denied");
+                    setLoading(false);
                     return;
                 }
 
@@ -30,15 +29,17 @@ export default function useUserLocation() {
 
                 const { latitude, longitude } = coords;
 
-                // 3️⃣ Optionally: reverse geocode to get address
+                // 3️⃣ Reverse geocode to get address
                 const geoRes = await fetch(
                     `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
                     {
                         headers: {
-                            'User-Agent': 'MyReactNativeApp/1.0 (myemail@example.com)', // Use your own info here
+                            // ✅ Use your real email or domain here
+                            "User-Agent": "MyApp/1.0 (me@mydomain.com)",
                         },
                     }
                 );
+
                 const geoData = await geoRes.json();
                 const address = geoData.display_name || "Unknown location";
                 console.log(latitude, longitude, address);
@@ -51,15 +52,20 @@ export default function useUserLocation() {
                         address,
                     })
                 );
-
-                setLoading(false)
             } catch (err) {
                 console.log("Error getting location:", err);
+            } finally {
+                setLoading(false);
             }
         };
 
-        getLocation();
-    }, [location.latitude, location.longitude, location.address]);
+        // ✅ Run only if location isn’t already stored
+        if (!location.latitude || !location.longitude) {
+            getLocation();
+        } else {
+            setLoading(false);
+        }
+    }, []);
 
-    return { loading }
+    return { loading, location };
 }

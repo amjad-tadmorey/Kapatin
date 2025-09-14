@@ -1,7 +1,7 @@
 import { IOrder } from '@/types/order';
 import { baseStyles, colors } from '@/utils/baseStyles';
 import { formatOrderDate } from '@/utils/helpers';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const OrderCard: React.FC<Props> = ({ order }) => {
-    const navigation = useNavigation();
+    const router = useRouter();
 
     const {
         _id,
@@ -22,10 +22,8 @@ const OrderCard: React.FC<Props> = ({ order }) => {
     } = order;
 
 
-
     const getStatusColor = () => {
         switch (status) {
-            case 'new': return '#FFA500';
             case 'delivered': return colors.dark;
             case 'canceled': return '#dc3545';
             default: return '#000';
@@ -50,8 +48,12 @@ const OrderCard: React.FC<Props> = ({ order }) => {
             </View>
 
             <TouchableOpacity
-
-            // onPress={() => navigation.navigate('OrderDetails', { order })}
+                onPress={() =>
+                    router.push({
+                        pathname: "/order/[id]",
+                        params: { id: order._id, order: JSON.stringify(order) },
+                    })
+                }
             >
                 {/* your card UI */}
                 <Text style={[baseStyles.quote, styles.link]}>View Details</Text>
