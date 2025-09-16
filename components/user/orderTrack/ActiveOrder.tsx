@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, StyleSheet, View } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 
 import { getOrders } from "@/api/order";
 import useOrderEvents from "@/hooks/useOrderEvents";
@@ -13,14 +14,14 @@ import DriverToYou from "./DriverToYou";
 import InProgress from "./InProgress";
 import Search from "./Search";
 
-import Dots from '../../../assets/dots-primary-bottom.svg';
+import Dots from "../../../assets/dots-primary-bottom.svg";
 
 const ActiveOrder: React.FC = () => {
-    const [closeOrder, setCloseOrder] = useState(false)
+    const [closeOrder, setCloseOrder] = useState(false);
     const { orders, loading } = useOrderEvents(getOrders, true, { status: "new" });
     const { height: SCREEN_HEIGHT } = Dimensions.get("window");
     const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
-    const [showFeedback, setShowFeedback] = useState(false)
+    const [showFeedback, setShowFeedback] = useState(false);
 
     useEffect(() => {
         if (showFeedback) {
@@ -39,18 +40,50 @@ const ActiveOrder: React.FC = () => {
     }, [showFeedback]);
 
     if (loading || !orders.length) return null;
-    const order = orders[0]
-    const { status, _id } = order
-    if (status === 'canceled' || status === 'closed' || closeOrder) return null
+    const order = orders[0];
+    const { status, _id, from, points } = order;
 
-
-    console.log(order);
+    if (status === "canceled" || status === "closed" || closeOrder) return null;
 
     return (
         <AnimatedView>
             <View style={styles.container}>
+                {/* Map Section */}
+                {from && (
+                    <View style={styles.mapContainer}>
+                        <MapView
+                            style={{ flex: 1 }}
+                            initialRegion={{
+                                latitude: from.lat,
+                                longitude: from.lng,
+                                latitudeDelta: 0.05,
+                                longitudeDelta: 0.05,
+                            }}
+                        >
+                            {/* From Marker */}
+                            <Marker
+                                coordinate={{ latitude: from.lat, longitude: from.lng }}
+                                title="Pickup"
+                                description={from.address}
+                                pinColor="green"
+                            />
 
-                {/* Bottom content takes remaining 50% */}
+                            {/* Points Markers */}
+                            {points && points.length > 0 &&
+                                points.map((p: any, idx: number) => (
+                                    <Marker
+                                        key={idx}
+                                        coordinate={{ latitude: p.lat, longitude: p.lng }}
+                                        title={`Point ${idx + 1}`}
+                                        description={p.address}
+                                        pinColor="blue"
+                                    />
+                                ))}
+                        </MapView>
+                    </View>
+                )}
+
+                {/* Progress Bar */}
                 <LoadingBar
                     width="100%"
                     height={5}
@@ -58,15 +91,28 @@ const ActiveOrder: React.FC = () => {
                     backgroundColor="#ddd"
                     speed={600}
                 />
+
+                {/* Order Status Section */}
                 <View style={styles.bottomContainer}>
-                    {status === 'new' && <Search id={_id} />}
-                    {status === 'confirmed' && <DriverToYou />}
-                    {status === 'driver-arrived' && <DriverArrived id={_id} />}
-                    {status === 'in-progress' && <InProgress />}
-                    {status === 'delivered' && <Delivered setShowFeedback={setShowFeedback} status={status} />}
+                    {status === "new" && <Search id={_id} />}
+                    {status === "confirmed" && <DriverToYou />}
+                    {status === "driver-arrived" && <DriverArrived id={_id} />}
+                    {status === "in-progress" && <InProgress />}
+                    {status === "delivered" && (
+                        <Delivered setShowFeedback={setShowFeedback} status={status} />
+                    )}
                 </View>
 
-                <Dots style={{ position: 'absolute', zIndex: 1, bottom: -100, left: -30, opacity: 0.7 }} width={350} />
+                <Dots
+                    style={{
+                        position: "absolute",
+                        zIndex: 1,
+                        bottom: -100,
+                        left: -30,
+                        opacity: 0.7,
+                    }}
+                    width={350}
+                />
 
                 <Animated.View
                     style={[
@@ -76,7 +122,11 @@ const ActiveOrder: React.FC = () => {
                         },
                     ]}
                 >
-                    <Feedback id={_id} setCloseOrder={setCloseOrder} setShowFeedback={setShowFeedback} />
+                    <Feedback
+                        id={_id}
+                        setCloseOrder={setCloseOrder}
+                        setShowFeedback={setShowFeedback}
+                    />
                 </Animated.View>
             </View>
         </AnimatedView>
@@ -91,7 +141,8 @@ const styles = StyleSheet.create({
         backgroundColor: colors.secondary,
     },
     mapContainer: {
-        flex: 1,
+        height: "40%", // Map height (adjust as needed)
+        width: "100%",
     },
     bottomContainer: {
         flex: 1,
@@ -99,15 +150,14 @@ const styles = StyleSheet.create({
         zIndex: 2,
     },
     fullScreenOverlay: {
-        position: 'absolute',
+        position: "absolute",
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.2)',
-        justifyContent: 'center',
-        alignItems: 'center',
+        backgroundColor: "rgba(0,0,0,0.2)",
+        justifyContent: "center",
+        alignItems: "center",
         zIndex: 999,
     },
 });
-

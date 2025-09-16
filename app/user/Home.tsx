@@ -14,11 +14,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import ActiveOrder from '../../components/user/orderTrack/ActiveOrder';
 
+import { createOrder } from "@/api/order";
 import DeliveryInfo from "@/components/user/createOrder/DeliveryInfo";
 import Packages from "@/components/user/createOrder/Packages";
 import Points from "@/components/user/createOrder/Points";
+import { getDynamicDeliveryFee } from "@/constants/basics";
+import usePushNotifications from "@/hooks/usePushNotifications";
+import { calculateRouteDistance } from "@/utils/helpers";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
 
 const Home: React.FC = () => {
     const methods = useForm<OrderFormInputs>();
@@ -28,68 +31,83 @@ const Home: React.FC = () => {
     const [points, setPoints] = useState<IPoint[]>([]);
 
     const [showLocationScreen, setShowLocationScreen] = useState(false);
+    const expoPushToken = usePushNotifications();
 
+    const distance = calculateRouteDistance(from, points);
+    const dynamicDeliveryFee = getDynamicDeliveryFee(distance)
 
     const handleCreateOrder = async (data: CreateOrderPayload) => {
-        console.log("Order Payload:", JSON.stringify(data, null, 2));
-        console.log("From:", JSON.stringify(from, null, 2));
-        console.log("Points:", JSON.stringify(points, null, 2));
-        // const coords = { from: fromMarkerPos, to: toMarkerPos };
+        const payload = {
+            ...data,
+            from,
+            points,
+            expoPushToken
+        }
+        console.log(JSON.stringify(payload, null, 2));
 
-        // setLoading(true);
-        // try {
-        //     await createOrder(data, coords);
-        //     methods.reset();
-        // } catch (err) {
-        //     console.error(err || "Failed to create order");
-        // } finally {
-        //     setLoading(false);
-        // }
+        setLoading(true);
+        try {
+            await createOrder(payload);
+            methods.reset();
+        } catch (err) {
+            console.error(err || "Failed to create order");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            {!showLocationScreen && (
-                <KeyboardAwareScrollView
-                    style={{ flex: 1 }}
-                    contentContainerStyle={styles.container}
-                    keyboardShouldPersistTaps="handled"
-                    enableOnAndroid
-                    extraScrollHeight={Platform.OS === "ios" ? 40 : 20}
-                >
-                    <Text style={[baseStyles.heading, { color: colors.primary, marginBottom: 10 }]}>Kapatin</Text>
-                    <FormProvider {...methods}>
+        <View style={{ flex: 1 }}>
+            <SafeAreaView style={styles.safeArea}>
+                {!showLocationScreen && (
+                    <KeyboardAwareScrollView
+                        style={{ flex: 1 }}
+                        contentContainerStyle={styles.container}
+                        keyboardShouldPersistTaps="handled"
+                        enableOnAndroid
+                        extraScrollHeight={Platform.OS === "ios" ? 40 : 20}
+                    >
+                        <Text style={[baseStyles.heading, { color: colors.primary, marginBottom: 10 }]}>Kapatin</Text>
+                        <FormProvider {...methods}>
 
-                        <TouchableWithoutFeedback onPress={() => setShowLocationScreen(true)}>
-                            <Text style={styles.locations} >Set Locations</Text>
-                        </TouchableWithoutFeedback>
-                        <View>
-                            <Packages control={control} errors={errors} />
-                        </View>
+                            <TouchableWithoutFeedback onPress={() => setShowLocationScreen(true)}>
+                                <Text style={styles.locations} >Set Locations</Text>
+                            </TouchableWithoutFeedback>
+                            <View>
+                                <Packages control={control} errors={errors} />
+                            </View>
 
-                        {/* Delivery info */}
-                        <View style={styles.box}>
-                            <DeliveryInfo control={control} errors={errors} />
-                        </View>
+                            {/* Delivery info */}
+                            <View style={styles.box}>
+                                <DeliveryInfo control={control} errors={errors} dynamicDeliveryFee={dynamicDeliveryFee} />
+                            </View>
 
-                        {/* Submit */}
-                        <View style={{ marginBottom: 50 }}>
-                            <Button
-                                onPress={handleSubmit(handleCreateOrder)}
-                                disabled={loading}
-                                title={loading ? "Creating..." : "Find A Driver"}
-                            />
-                        </View>
-                    </FormProvider>
-                </KeyboardAwareScrollView>
-            )}
+                            {/* Submit */}
+                            <View style={{ marginBottom: 50 }}>
+                                <Button
+                                    onPress={handleSubmit(handleCreateOrder)}
+                                    disabled={loading}
+                                    title={loading ? "Creating..." : "Find A Driver"}
+                                />
+                            </View>
+                        </FormProvider>
+                    </KeyboardAwareScrollView>
+                )}
 
+                {!showLocationScreen && <ActiveOrder />}
+            </SafeAreaView>
+
+            {/* Wrap Points in a full screen View so SwipeablePanelLayout works */}
             {showLocationScreen && (
-                <Points setShowLocationScreen={setShowLocationScreen} from={from} setFrom={setFrom} points={points} setPoints={setPoints} />
+                <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+                    <Points
+                        setShowLocationScreen={setShowLocationScreen}
+                        from={from} setFrom={setFrom}
+                        points={points} setPoints={setPoints}
+                    />
+                </View>
             )}
-
-            {!showLocationScreen && <ActiveOrder />}
-        </SafeAreaView>
+        </View>
     );
 };
 
@@ -115,38 +133,6 @@ const styles = StyleSheet.create({
         borderColor: colors.dark,
         borderRadius: 20,
         marginBottom: 10,
-    },
-    title: {
-        color: colors.primaryDark,
-        marginBottom: 20,
-        textAlign: "center",
-    },
-    item: {
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        paddingVertical: 12,
-    },
-    icon: {
-        marginRight: 12,
-        marginTop: 2,
-    },
-    textContainer: {
-        flex: 1,
-    },
-    line1: {
-        fontWeight: 'bold',
-        fontSize: 16,
-        color: '#333',
-    },
-    line2: {
-        fontSize: 14,
-        color: '#666',
-        marginTop: 2,
-    },
-    separator: {
-        height: 1,
-        backgroundColor: '#eee',
-        marginVertical: 8,
     },
 });
 

@@ -18,9 +18,11 @@ const Activity: React.FC = () => {
     return (
         <SafeAreaView style={styles.container}>
             <Text style={[baseStyles.heading, { color: colors.primary, marginBottom: 10 }]}>Kapatin</Text>
-            {orders.length === 0 ? (
+            {orders
+                .filter(o => o.status === 'delivered' || o.status === 'canceled')
+                .length === 0 ? (
                 <View style={styles.empty}>
-                    <Text style={styles.emptyText}>No orders found.</Text>
+                    <Text style={styles.emptyText}>No orders found</Text>
                 </View>
             ) : (
                 <FlatList

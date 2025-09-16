@@ -49,8 +49,6 @@ export default function useOrderEvents(
             socket.on("connect", () => console.log("Connected to socket server"));
 
             socket.on("Order_event", (event: any) => {
-                console.log("New order event:", event);
-
                 setOrders((prev) => {
                     const safePrev = Array.isArray(prev) ? prev : [];
 

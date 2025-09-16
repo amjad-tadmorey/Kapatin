@@ -21,8 +21,6 @@ SplashScreen.preventAutoHideAsync();
 
 function LayoutWithOnboarding() {
   const { loading } = useOnboarding();
-  const expoPushToken = usePushNotifications();
-  console.log(expoPushToken);
 
 
   useEffect(() => {

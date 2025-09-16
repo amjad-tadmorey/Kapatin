@@ -15,8 +15,8 @@ type InputProps = {
   numberOfLines?: number;
   label: string;
   editable?: boolean;
-  value?: string | number;
-  onPress?: () => void
+  value?: string | number; // used for dynamic values like deliveryFee
+  onPress?: () => void;
 };
 
 const Input: React.FC<InputProps> = ({
@@ -31,13 +31,13 @@ const Input: React.FC<InputProps> = ({
   label = "",
   editable = true,
   value,
-  onPress = () => { }
+  onPress = () => { },
 }) => {
   const { setValue } = useFormContext();
 
-  // 💡 Set the value inside RHF on mount
+  // 💡 Only update dynamically if the field is "deliveryFee"
   useEffect(() => {
-    if (value !== undefined && value !== null) {
+    if (name === "deliveryFee" && value !== undefined && value !== null) {
       setValue(name, value);
     }
   }, [value, name, setValue]);
@@ -73,8 +73,7 @@ const Input: React.FC<InputProps> = ({
             />
             {errors[name] && (
               <Text style={styles.errorText}>
-                {(errors[name]?.message as string) ||
-                  "This field is required"}
+                {(errors[name]?.message as string) || "This field is required"}
               </Text>
             )}
           </>

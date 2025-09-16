@@ -173,34 +173,32 @@ const Points: React.FC<Props> = ({ setShowLocationScreen, setFrom, setPoints, fr
       expandedHeight={0.8 * 800}
       collapsedHeight={0.45 * 800}
       topPanel={
-        <View style={{ flex: 1 }}>
-          <MapView
-            ref={(r) => (mapRef.current = r)}
-            style={{ flex: 1 }}
-            region={region}
-            onRegionChangeComplete={(r) => setRegion(r)}
-            onPress={handleMapPress}
-          >
-            {/* From marker (distinct color) */}
-            {from?.lat ? (
-              <Marker
-                coordinate={{ latitude: from.lat, longitude: from.lng }}
-                pinColor={activeField === "from" ? "green" : "red"}
-              />
-            ) : null}
+        <MapView
+          ref={(r) => (mapRef.current = r)}
+          style={{ flex: 1 }}
+          region={region}
+          onRegionChangeComplete={(r) => setRegion(r)}
+          onPress={handleMapPress}
+        >
+          {/* From marker (distinct color) */}
+          {from?.lat ? (
+            <Marker
+              coordinate={{ latitude: from.lat, longitude: from.lng }}
+              pinColor={activeField === "from" ? "green" : "red"}
+            />
+          ) : null}
 
-            {/* Points markers */}
-            {points.map((p, idx) =>
-              p?.lat ? (
-                <Marker
-                  key={idx}
-                  coordinate={{ latitude: p.lat, longitude: p.lng }}
-                  pinColor={activeField === idx ? "green" : "blue"}
-                />
-              ) : null
-            )}
-          </MapView>
-        </View>
+          {/* Points markers */}
+          {points.map((p, idx) =>
+            p?.lat ? (
+              <Marker
+                key={idx}
+                coordinate={{ latitude: p.lat, longitude: p.lng }}
+                pinColor={activeField === idx ? "green" : "blue"}
+              />
+            ) : null
+          )}
+        </MapView>
       }
       bottomPanel={
         <KeyboardAvoidingView

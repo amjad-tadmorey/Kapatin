@@ -51,7 +51,7 @@ const SwipeablePanelLayout = ({
   ).current;
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: 'red' }}>
       {/* Top Panel */}
       <View style={{ flex: 1 }}>{topPanel}</View>
 
@@ -74,7 +74,6 @@ const SwipeablePanelLayout = ({
   );
 };
 
-export default SwipeablePanelLayout;
 
 const styles = StyleSheet.create({
   bottomPanel: {
@@ -100,3 +99,5 @@ const styles = StyleSheet.create({
     padding: 20
   },
 });
+
+export default SwipeablePanelLayout;

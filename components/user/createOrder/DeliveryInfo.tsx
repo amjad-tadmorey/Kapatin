@@ -3,7 +3,10 @@ import { baseStyles, colors } from "@/utils/baseStyles";
 import React from "react";
 import { StyleSheet, Text } from "react-native";
 
-const DeliveryInfo: React.FC<{ control: any, errors: any }> = ({ control, errors }) => {
+const DeliveryInfo: React.FC<{ control: any, errors: any, dynamicDeliveryFee: number | null }> = ({ control, errors, dynamicDeliveryFee }) => {
+
+    console.log(dynamicDeliveryFee);
+
     return <>
         <Text style={[baseStyles.secHeader, styles.title]}>
             Delivery Information:
@@ -40,9 +43,12 @@ const DeliveryInfo: React.FC<{ control: any, errors: any }> = ({ control, errors
             name="deliveryFee"
             placeholder="Delivery Fee"
             rules={{ required: "Delivery fee is required" }}
-            label="Delivery Fees:"
+            label={<Text>Delivery Fees: <Text style={{ color: colors.primaryDark }}>(dynamic below 35 km)</Text> </Text>}
             keyboardType="numeric"
+            value={dynamicDeliveryFee ?? undefined}  // <-- pass dynamic fee here
+            editable={dynamicDeliveryFee === null}
         />
+        {dynamicDeliveryFee === null && <Text style={[baseStyles.quote, { backgroundColor: colors.primaryLight, padding: 10, borderRadius: 15, color: colors.dark }]}>Your delivery distance exceeds 35 km. Please contact the driver directly to arrange the delivery fee</Text>}
     </>
 }
 

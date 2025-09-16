@@ -7,6 +7,7 @@ import TypingText from "../../shared/TypingText"
 
 
 const Confirmed: React.FC = () => {
+
     return <View style={styles.section}>
         <CheckIcon width={75} height={75} />
         <Text style={[baseStyles.title, { color: colors.primary, textAlign: 'center' }]}>Confirmed!</Text>
