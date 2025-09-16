@@ -3,9 +3,9 @@ import React, { useState } from "react"
 import { StyleSheet, Text, View } from "react-native"
 
 import { baseStyles, colors } from "@/utils/baseStyles"
-import DriverArrivedIcon from '../assets/driver-arrived.svg'
-import Button from "./Button"
-import TypingText from "./TypingText"
+import DriverArrivedIcon from '../../../assets/driver-arrived.svg'
+import Button from "../../shared/Button"
+import TypingText from "../../shared/TypingText"
 
 const DriverArrived: React.FC<{ id: string }> = ({ id }) => {
     const [loading, setLoading] = useState(false)

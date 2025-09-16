@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { baseStyles, colors } from "@/utils/baseStyles";
-import SearchIcon from '../assets/search.svg';
-import Button from "./Button";
-import TypingText from "./TypingText";
+import SearchIcon from '../../../assets/search.svg';
+import Button from "../../shared/Button";
+import TypingText from "../../shared/TypingText";
 
 
 const Search: React.FC<{ id: string }> = ({ id }) => {

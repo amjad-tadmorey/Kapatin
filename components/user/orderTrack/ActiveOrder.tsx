@@ -4,15 +4,16 @@ import { Animated, Dimensions, StyleSheet, View } from "react-native";
 import { getOrders } from "@/api/order";
 import useOrderEvents from "@/hooks/useOrderEvents";
 import { colors } from "@/utils/baseStyles";
-import AnimatedView from "./AnimatedView";
+import AnimatedView from "../../shared/AnimatedView";
+import Feedback from "../../shared/Feedback";
+import LoadingBar from "../../shared/LoadingBar";
 import Delivered from "./Delivered";
 import DriverArrived from "./DriverArrived";
 import DriverToYou from "./DriverToYou";
-import Feedback from "./Feedback";
 import InProgress from "./InProgress";
-import LoadingBar from "./LoadingBar";
 import Search from "./Search";
-import TrackMap from "./TrackMap";
+
+import Dots from '../../../assets/dots-primary-bottom.svg';
 
 const ActiveOrder: React.FC = () => {
     const [closeOrder, setCloseOrder] = useState(false)
@@ -48,10 +49,6 @@ const ActiveOrder: React.FC = () => {
     return (
         <AnimatedView>
             <View style={styles.container}>
-                {/* Map takes 50% height */}
-                <View style={styles.mapContainer}>
-                    <TrackMap from={orders[0].from} to={orders[0].to} />
-                </View>
 
                 {/* Bottom content takes remaining 50% */}
                 <LoadingBar

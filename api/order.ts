@@ -1,7 +1,7 @@
-import { axiosInstance } from "./constants";
-import { Coords, CreateOrderPayload, IOrder, UpdateOrderPayload } from "../types/order";
-import { store } from "../redux/store";
 import * as Location from "expo-location";
+import { store } from "../redux/store";
+import { Coords, CreateOrderPayload, IOrder, UpdateOrderPayload } from "../types/order";
+import { axiosInstance } from "./constants";
 
 export const createOrder = async (payload: CreateOrderPayload, coords: Coords): Promise<IOrder> => {
   try {

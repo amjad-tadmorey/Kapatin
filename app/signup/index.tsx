@@ -1,5 +1,5 @@
 import { signupUser } from "@/api/auth";
-import Button from "@/components/Button";
+import Button from "@/components/shared/Button";
 import { useOnboarding } from "@/context/OnboardingContext";
 import { setCredentials } from "@/redux/slices/authSlice";
 import { baseStyles, colors } from "@/utils/baseStyles";

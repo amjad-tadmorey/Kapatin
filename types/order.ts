@@ -1,40 +1,6 @@
 // src/types/order.ts
 
-export interface IOrder {
-  _id?: string;
-  created_at?: string;
-  expiresAt?: string;
-
-  price: number;
-  deliveryFee: number;
-
-  from: {
-    type: "Point";
-    coordinates: [number, number]; // [lng, lat]
-    address: string;
-  };
-
-  to: {
-    type: "Point";
-    coordinates: [number, number]; // [lng, lat]
-    address: string;
-  };
-
-  user: IUser;
-  driver?: IUser | null;
-
-  recipientName: string;
-  recipientNumber: string;
-
-  items: any[]; // Consider replacing 'any' with a defined IItem type
-
-  status: "new" | "closed" | "in-progress" | "delivered" | "canceled" | "driver-arrived" | "confirmed";
-
-  rate: number;
-  feedback: string;
-}
-
-// Shared user type
+// Shared user type (frontend representation)
 export interface IUser {
   _id: string;
   name: string;
@@ -42,46 +8,90 @@ export interface IUser {
   type: "user" | "driver" | "admin" | "super-admin";
 }
 
+// Point inside "points" array
+export interface IPoint {
+  point: number;
+  lat: number;
+  lng: number;
+  address?: string;
+}
 
-export interface OrderFormInputs {
-  from: string;
-  to: string
+// "from" field structure
+export interface IFrom {
+  lat: number;
+  lng: number;
+  address?: string;
+}
+
+// Full Order type (aligned with backend schema)
+export interface IOrder {
+  _id?: string;
+
+  created_at: string;
+  expiresAt: string;
+
   price: number;
   deliveryFee: number;
+
+  user: IUser;
+  driver?: IUser | null;
+
   recipientName: string;
   recipientNumber: string;
-  recipientAdress: string;
-  items: string;
-}
 
-export interface CreateOrderPayload {
-  price: number;
-  deliveryFee: number;
-  items?: any[];
-  recipientName: String;
-  recipientNumber: String;
-  from: string;
-  to: string
-}
+  items: any[]; // can replace with IItem[] later
 
-export interface UpdateOrderPayload {
-  status?: string; // e.g. "accepted", "delivered", "canceled"
-  deliveryFee?: number;
-  price?: number;
-  recipientName?: string;
-  recipientNumber?: string;
+  from: IFrom;
+  points?: IPoint[];
+
+  status:
+  | "new"
+  | "closed"
+  | "in-progress"
+  | "delivered"
+  | "canceled"
+  | "driver-arrived"
+  | "confirmed";
+
   rate?: number;
   feedback?: string;
-  items?: any[];
 }
 
-export interface Coords {
-  from: {
-    latitude: number;
-    longitude: number;
-  };
-  to: {
-    latitude: number;
-    longitude: number;
-  };
-}
+// ---------- Derived types ----------
+
+// Form inputs (before creating order, user enters strings for addresses)
+export type OrderFormInputs = Pick<
+  IOrder,
+  "price" | "deliveryFee" | "recipientName" | "recipientNumber" | "items"
+> & {
+  from: string; // typed address (converted later to lat/lng)
+  points?: { lat: number; lng: number; address?: string }[];
+};
+
+// Payload to create order (frontend → backend)
+export type CreateOrderPayload = Pick<
+  IOrder,
+  | "price"
+  | "deliveryFee"
+  | "recipientName"
+  | "recipientNumber"
+  | "items"
+  | "from"
+  | "points"
+>;
+
+// Payload to update order (partial fields)
+export type UpdateOrderPayload = Partial<
+  Pick<
+    IOrder,
+    | "status"
+    | "deliveryFee"
+    | "price"
+    | "recipientName"
+    | "recipientNumber"
+    | "rate"
+    | "feedback"
+    | "items"
+    | "points"
+  >
+>;

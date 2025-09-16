@@ -3,7 +3,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { Provider } from "react-redux";
-import AuthWrapper from "../components/AuthWrapper";
+import AuthWrapper from "../components/shared/AuthWrapper";
 
 import { Lato_400Regular } from "@expo-google-fonts/lato";
 import { Montserrat_700Bold } from "@expo-google-fonts/montserrat";

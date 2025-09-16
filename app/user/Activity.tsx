@@ -1,5 +1,5 @@
 import { getOrders } from "@/api/order";
-import OrderCard from "@/components/OrderCard";
+import OrderCard from "@/components/shared/OrderCard";
 import useOrderEvents from "@/hooks/useOrderEvents";
 import { RootState } from "@/redux/store";
 import { IOrder } from "@/types/order";

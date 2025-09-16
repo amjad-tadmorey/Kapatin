@@ -1,20 +1,32 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { StyleSheet, Text, View } from "react-native"
 
 import { baseStyles, colors } from "@/utils/baseStyles"
-import CheckIcon from '../assets/check.svg'
-import TypingText from "./TypingText"
+import DriverToYouIcon from '../../../assets/driver-to-you.svg'
+import TypingText from "../../shared/TypingText"
+import Confirmed from "./Confirmed"
 
+const DriverToYou: React.FC = () => {
+    const [showConfirmed, setShowConfirmed] = useState(true);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowConfirmed(false);
+        }, 5000); // 5 seconds
+        return () => clearTimeout(timer);
+    }, []);
 
-const Confirmed: React.FC = () => {
+    if (showConfirmed) {
+        return <Confirmed />;
+    }
+
     return <View style={styles.section}>
-        <CheckIcon width={75} height={75} />
-        <Text style={[baseStyles.title, { color: colors.primary, textAlign: 'center' }]}>Confirmed!</Text>
+        <DriverToYouIcon width={75} height={75} />
+        <Text style={[baseStyles.heading, { color: colors.primary, textAlign: 'center' }]}>Arriving within 15 minutes</Text>
         <TypingText
-            text="The driver is heading to you to pick up the package."
+            text="On the way to you."
             style={[baseStyles.caption, { color: colors.dark, marginTop: 20, textAlign: 'center' }]}
-            speed={80}  // optional, default 100ms
-            loop={false} // optional, default false
+            speed={80}
+            loop={false}
         />
         <View style={{ backgroundColor: colors.dark, padding: 20, borderRadius: 20, marginTop: 'auto' }}>
             <Text style={[baseStyles.quote, { color: colors.primary, marginBottom: 5 }]}>Your delivery guy for today is: </Text>
@@ -27,7 +39,7 @@ const Confirmed: React.FC = () => {
 
 const styles = StyleSheet.create({
     section: {
-        flex: 1, // allows it to fill the screen
+        flex: 1,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-start',
@@ -35,4 +47,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Confirmed
+export default DriverToYou

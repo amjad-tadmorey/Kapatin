@@ -1,9 +1,9 @@
 import { baseStyles, colors } from "@/utils/baseStyles";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import CallIcon from '../assets/call.svg';
-import InProgressIcon from '../assets/truck.svg';
-import TypingText from "./TypingText";
+import CallIcon from '../../../assets/call.svg';
+import InProgressIcon from '../../../assets/truck.svg';
+import TypingText from "../../shared/TypingText";
 
 const InProgress: React.FC = () => {
     return <View style={styles.section}>

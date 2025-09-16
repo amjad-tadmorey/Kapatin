@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Arrow from '../../assets/arrow.svg';
-import Button from '../../components/Button';
+import Button from '../../components/shared/Button';
 import Slide1 from "./Slide1";
 import Slide2 from "./Slide2";
 import Slide3 from "./Slide3";
@@ -62,7 +62,7 @@ export default function Onboarding() {
                 </View>
             ) : (
                 <View style={{ marginBottom: 100 }}>
-                    <Button title="Get Started" onPress={finishOnboarding} />
+                    <Button disabled={false} title="Get Started" onPress={finishOnboarding} />
                 </View>
             )}
         </View>

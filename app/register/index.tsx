@@ -1,5 +1,5 @@
 import { createApplication } from "@/api/application";
-import Button from "@/components/Button";
+import Button from "@/components/shared/Button";
 import { useOnboarding } from "@/context/OnboardingContext";
 import { baseStyles, colors } from "@/utils/baseStyles";
 import { useRouter } from "expo-router";

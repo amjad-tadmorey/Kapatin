@@ -1,8 +1,8 @@
 import { baseStyles, colors } from "@/utils/baseStyles";
 import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import DeliveredIcon from "../assets/delivered.svg";
-import TypingText from "./TypingText";
+import DeliveredIcon from "../../../assets/delivered.svg";
+import TypingText from "../../shared/TypingText";
 
 interface DeliveredProps {
   setShowFeedback: (value: boolean) => void;
