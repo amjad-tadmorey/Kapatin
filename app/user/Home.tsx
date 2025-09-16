@@ -63,7 +63,7 @@ const Home: React.FC = () => {
                         <TouchableWithoutFeedback onPress={() => setShowLocationScreen(true)}>
                             <Text style={styles.locations} >Set Locations</Text>
                         </TouchableWithoutFeedback>
-                        <View style={styles.box}>
+                        <View>
                             <Packages control={control} errors={errors} />
                         </View>
 

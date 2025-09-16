@@ -13,6 +13,7 @@ import { Poppins_700Bold, useFonts } from "@expo-google-fonts/poppins";
 import { Raleway_700Bold } from "@expo-google-fonts/raleway";
 
 import { OnboardingProvider, useOnboarding } from "@/context/OnboardingContext";
+import usePushNotifications from "@/hooks/usePushNotifications";
 import { store } from "@/redux/store";
 
 // ✅ prevent splash from hiding automatically
@@ -20,6 +21,9 @@ SplashScreen.preventAutoHideAsync();
 
 function LayoutWithOnboarding() {
   const { loading } = useOnboarding();
+  const expoPushToken = usePushNotifications();
+  console.log(expoPushToken);
+
 
   useEffect(() => {
     if (!loading) {

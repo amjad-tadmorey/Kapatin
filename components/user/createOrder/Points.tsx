@@ -1,4 +1,5 @@
 // Points.tsx
+import { Ionicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -7,14 +8,15 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import MapView, { MapPressEvent, Marker, Region } from "react-native-maps";
-import { Ionicons } from "@expo/vector-icons";
 
+import Button from "@/components/shared/Button";
 import SwipeablePanelLayout from "@/components/shared/SwipeablePanelLayout";
 import { IFrom, IPoint } from "@/types/order";
 import { colors } from "@/utils/baseStyles";
@@ -277,44 +279,19 @@ const Points: React.FC<Props> = ({ setShowLocationScreen, setFrom, setPoints, fr
             ))}
 
             {/* Add Point button (custom) */}
-            <TouchableOpacity
-              onPress={addPoint}
-              activeOpacity={0.9}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: 14,
-                borderRadius: 12,
-                backgroundColor: colors.primary,
-                marginTop: 6,
-                shadowColor: "#000",
-                shadowOpacity: 0.12,
-                shadowRadius: 6,
-                elevation: 3,
-              }}
-            >
-              <Ionicons name="add" size={20} color="#fff" />
-              <Text style={{ color: "#fff", fontWeight: "600", marginLeft: 10 }}>Add Point</Text>
+            <TouchableOpacity style={styles.addButton} onPress={addPoint}>
+              <Text style={styles.addText}>+ add Point</Text>
             </TouchableOpacity>
 
             {/* Done button */}
             <View style={{ marginTop: 24 }}>
-              <TouchableOpacity
+              <Button
+                title="Done"
                 onPress={() => {
-                  console.log("Order From:", JSON.stringify(from, null, 2));
-                  console.log("Order Points:", JSON.stringify(points, null, 2));
                   setShowLocationScreen(false);
                 }}
-                style={{
-                  backgroundColor: "#2ecc71",
-                  padding: 14,
-                  borderRadius: 12,
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ color: "#fff", fontWeight: "600" }}>Done</Text>
-              </TouchableOpacity>
+                disabled={false}
+              />
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -322,5 +299,20 @@ const Points: React.FC<Props> = ({ setShowLocationScreen, setFrom, setPoints, fr
     />
   );
 };
+
+const styles = StyleSheet.create({
+  addButton: {
+    marginTop: 10,
+    paddingVertical: 12,
+    backgroundColor: colors.secondary,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  addText: {
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: "500",
+  },
+});
 
 export default Points;

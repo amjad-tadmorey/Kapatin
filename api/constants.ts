@@ -1,6 +1,6 @@
 import axios from "axios";
 export const BASE_URL = 'http://192.168.1.174:5000'
-const API_URL = "http://192.168.1.174:5000/api/v1";
+export const API_URL = "http://192.168.1.174:5000/api/v1";
 // export const BASE_URL = 'http://localhost:5000'
 // const API_URL = "http://localhost:5000/api/v1";
 // export const BASE_URL = 'https://c944638f3f54.ngrok-free.app'
