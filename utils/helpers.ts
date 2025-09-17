@@ -1,3 +1,5 @@
+
+
 export const formatOrderDate = (dateStr: string): string => {
     const date = new Date(dateStr);
     const now = new Date();
@@ -60,4 +62,38 @@ export function calculateRouteDistance(
     }
     return total;
 }
+
+
+const FIVE_MINUTES = 3000; // 5 minutes in milliseconds
+
+export function getCancelOrderText(status: string, statusUpdatedAt: Date) {
+    const now = new Date();
+    const updatedAt = statusUpdatedAt ? new Date(statusUpdatedAt) : new Date(0);
+    const diff = now.getTime() - updatedAt.getTime();
+
+    let title
+    let text
+
+    switch (status) {
+        case "new":
+            title = "Are you sure you want to cancel the order";
+        case "confirmed":
+            if (diff > FIVE_MINUTES) {
+                title = "Are you sure you want to cancel the order, the driver is almost there";
+            } else {
+                title = "Are you sure you want to cancel the order, the driver is on the way to you";
+            }
+
+        case "in-progress":
+            if (diff > FIVE_MINUTES) {
+                title = "Are you sure you want to cancel the order, the driver is almost there to your customer";
+            } else {
+                title = "Are you sure you want to cancel the order, the driver is on the way to your customer";
+            }
+
+        default:
+            title = "Are you sure you want to cancel the order"; // fallback text
+    }
+}
+
 

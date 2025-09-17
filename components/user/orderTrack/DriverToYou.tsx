@@ -8,6 +8,7 @@ import Confirmed from "./Confirmed"
 
 const DriverToYou: React.FC = () => {
     const [showConfirmed, setShowConfirmed] = useState(true);
+
     useEffect(() => {
         const timer = setTimeout(() => {
             setShowConfirmed(false);

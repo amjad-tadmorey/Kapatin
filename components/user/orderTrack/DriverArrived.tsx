@@ -1,24 +1,11 @@
-import { updateOrder } from "@/api/order"
-import React, { useState } from "react"
+import React from "react"
 import { StyleSheet, Text, View } from "react-native"
 
 import { baseStyles, colors } from "@/utils/baseStyles"
 import DriverArrivedIcon from '../../../assets/driver-arrived.svg'
-import Button from "../../shared/Button"
 import TypingText from "../../shared/TypingText"
 
-const DriverArrived: React.FC<{ id: string }> = ({ id }) => {
-    const [loading, setLoading] = useState(false)
-    const handleCancelOrder = async () => {
-        setLoading(true);
-        try {
-            await updateOrder(id, { status: 'canceled' });
-        } catch (err: any) {
-            console.error(err || "Failed to cancel order");
-        } finally {
-            setLoading(false);
-        }
-    };
+const DriverArrived: React.FC = () => {
 
     return <View style={styles.section}>
         <DriverArrivedIcon width={75} height={75} />
@@ -31,14 +18,6 @@ const DriverArrived: React.FC<{ id: string }> = ({ id }) => {
             speed={80}  // optional, default 100ms
             loop={false} // optional, default false
         />
-        <View style={{ borderTopWidth: 1, width: "100%", borderTopColor: colors.primary, marginTop: 'auto', }}>
-            <Button
-                onPress={handleCancelOrder}
-                disabled={loading}
-                title={loading ? "Canceling..." : "Cancel"}
-                variant="dark"
-            />
-        </View>
     </View>
 }
 

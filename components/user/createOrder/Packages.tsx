@@ -1,6 +1,7 @@
 import MultipleInputs from "@/components/shared/MultipleInputs";
 import { baseStyles, colors } from "@/utils/baseStyles";
-import React from "react";
+import { FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
+import React, { JSX } from "react";
 import { Controller } from "react-hook-form";
 import {
     Animated,
@@ -9,11 +10,23 @@ import {
     Text,
     View,
 } from "react-native";
-import PlaceHolder from "../../../assets/home-active.svg";
 
 const options = {
     packageType: ["small", "medium", "large"],
     vehicleType: ["car", "van", "truck"],
+};
+
+// Map icons for each type
+const packageIcons: Record<string, JSX.Element> = {
+    small: <MaterialCommunityIcons name="cube-outline" size={40} color={colors.primary} />,
+    medium: <MaterialCommunityIcons name="cube-outline" size={50} color={colors.primary} />,
+    large: <MaterialCommunityIcons name="cube-outline" size={60} color={colors.primary} />,
+};
+
+const vehicleIcons: Record<string, JSX.Element> = {
+    car: <FontAwesome5 name="car" size={60} color={colors.primary} />,
+    van: <MaterialCommunityIcons name="van-passenger" size={60} color={colors.primary} />,
+    truck: <FontAwesome5 name="truck" size={60} color={colors.primary} />,
 };
 
 const SelectOption = ({
@@ -52,6 +65,11 @@ const SelectOption = ({
 
                         const isSelected = value === val;
 
+                        const icon =
+                            name === "packageType"
+                                ? packageIcons[val]
+                                : vehicleIcons[val];
+
                         return (
                             <Pressable key={val} onPress={handlePress}>
                                 <Animated.View
@@ -61,7 +79,7 @@ const SelectOption = ({
                                         isSelected && styles.selected,
                                     ]}
                                 >
-                                    <PlaceHolder width={40} height={40} />
+                                    {icon}
                                     <Text style={styles.optionLabel}>{val}</Text>
                                 </Animated.View>
                             </Pressable>
@@ -145,12 +163,14 @@ const styles = StyleSheet.create({
         borderColor: colors.primaryDark,
         borderRadius: 10,
         alignItems: "center",
+        width: 100,
+        height: 100,
     },
     selected: {
         backgroundColor: colors.primaryLight,
     },
     optionLabel: {
-        marginTop: 5,
+        marginTop: 'auto',
         color: colors.primaryDark,
         fontSize: 12,
         textTransform: "capitalize",

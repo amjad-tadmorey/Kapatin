@@ -14,14 +14,18 @@ import DriverToYou from "./DriverToYou";
 import InProgress from "./InProgress";
 import Search from "./Search";
 
+import Button from "@/components/shared/Button";
 import Dots from "../../../assets/dots-primary-bottom.svg";
+import CancelCard from "./CancelCard";
 
 const ActiveOrder: React.FC = () => {
     const [closeOrder, setCloseOrder] = useState(false);
-    const { orders, loading } = useOrderEvents(getOrders, true, { status: "new" });
+    const { orders, loading: loadingOrder } = useOrderEvents(getOrders, true, { status: "new" });
     const { height: SCREEN_HEIGHT } = Dimensions.get("window");
     const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
     const [showFeedback, setShowFeedback] = useState(false);
+    const [showCancelCard, setShowCancelCard] = useState(false);
+
 
     useEffect(() => {
         if (showFeedback) {
@@ -39,9 +43,9 @@ const ActiveOrder: React.FC = () => {
         }
     }, [showFeedback]);
 
-    if (loading || !orders.length) return null;
+    if (loadingOrder || !orders.length) return null;
     const order = orders[0];
-    const { status, _id, from, points } = order;
+    const { status, _id, from, points, statusUpdatedAt } = order;
 
     if (status === "canceled" || status === "closed" || closeOrder) return null;
 
@@ -94,14 +98,26 @@ const ActiveOrder: React.FC = () => {
 
                 {/* Order Status Section */}
                 <View style={styles.bottomContainer}>
-                    {status === "new" && <Search id={_id} />}
+                    {status === "new" && <Search />}
                     {status === "confirmed" && <DriverToYou />}
-                    {status === "driver-arrived" && <DriverArrived id={_id} />}
+                    {status === "driver-arrived" && <DriverArrived />}
                     {status === "in-progress" && <InProgress />}
                     {status === "delivered" && (
                         <Delivered setShowFeedback={setShowFeedback} status={status} />
                     )}
                 </View>
+
+                <View style={styles.buttonContainer}>
+                    <Button
+                        onPress={() => setShowCancelCard(true)}
+                        disabled={false}
+                        title={"Cancel"}
+                        variant="dark"
+                    />
+                </View>
+
+                <CancelCard id={_id} statusUpdatedAt={statusUpdatedAt} status={status} show={showCancelCard} setShow={setShowCancelCard} />
+
 
                 <Dots
                     style={{
@@ -141,7 +157,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.secondary,
     },
     mapContainer: {
-        height: "40%", // Map height (adjust as needed)
+        height: "40%",
         width: "100%",
     },
     bottomContainer: {
@@ -160,4 +176,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         zIndex: 999,
     },
+    buttonContainer: {
+        borderTopWidth: 1,
+        width: "100%",
+        borderTopColor: colors.primary,
+        marginBottom: 140,
+        zIndex: 2
+    }
 });
