@@ -29,7 +29,7 @@ const OrderDetails: React.FC = () => {
         price,
         deliveryFee,
         from,
-        to,
+        points,
         recipientName,
         recipientNumber,
         created_at,
@@ -71,8 +71,13 @@ const OrderDetails: React.FC = () => {
                         width: '50%', borderRightWidth: 1, borderColor: colors.primaryDark, paddingVertical: 30, paddingLeft: 45
                     }}>
                         <LocationIcon width={30} height={30} style={{ position: 'absolute', top: 5, left: 15 }} />
-                        <Text style={[baseStyles.quote, { color: colors.primaryDark, marginBottom: 20 }]}>Drop off Location</Text>
-                        <Text style={[baseStyles.body, { color: colors.dark }]}>{to.address}</Text>
+                        <Text style={[baseStyles.quote, { color: colors.primaryDark, marginBottom: 20 }]}>Drop off Points</Text>
+
+                        <View>
+                            {
+                                points.map((point: any) => <Text key={point.point} style={[baseStyles.body, { color: colors.dark }]}>{point.address}</Text>)
+                            }
+                        </View>
                     </View>
 
                 </View>
@@ -98,7 +103,7 @@ const OrderDetails: React.FC = () => {
             </View>
 
             <View style={{ padding: 20, flex: 1 }}>
-                <Text style={[baseStyles.quote, { color: colors.dark, marginBottom: 40 }]}>Products: {items.map(i => <Text>{i}, </Text>)}</Text>
+                <Text style={[baseStyles.quote, { color: colors.dark, marginBottom: 40 }]}>Products: {items.map((i: any) => <Text>{i}, </Text>)}</Text>
                 <Text style={[baseStyles.quote, { color: colors.dark }]}>Delivery Fee: {deliveryFee} JOD</Text>
                 <Text style={[baseStyles.quote, { color: colors.dark }]}>Products Price: {price} JOD</Text>
                 <Text style={{ color: colors.dark, marginTop: 40, fontWeight: '200', fontSize: 16 }}>Delivered At: {"X"}</Text>

@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -169,132 +170,138 @@ const Points: React.FC<Props> = ({ setShowLocationScreen, setFrom, setPoints, fr
   }
 
   return (
-    <SwipeablePanelLayout
-      expandedHeight={0.8 * 800}
-      collapsedHeight={0.45 * 800}
-      topPanel={
-        <MapView
-          ref={(r) => (mapRef.current = r)}
-          style={{ flex: 1 }}
-          region={region}
-          onRegionChangeComplete={(r) => setRegion(r)}
-          onPress={handleMapPress}
-        >
-          {/* From marker (distinct color) */}
-          {from?.lat ? (
-            <Marker
-              coordinate={{ latitude: from.lat, longitude: from.lng }}
-              pinColor={activeField === "from" ? "green" : "red"}
-            />
-          ) : null}
-
-          {/* Points markers */}
-          {points.map((p, idx) =>
-            p?.lat ? (
-              <Marker
-                key={idx}
-                coordinate={{ latitude: p.lat, longitude: p.lng }}
-                pinColor={activeField === idx ? "green" : "blue"}
-              />
-            ) : null
-          )}
-        </MapView>
-      }
-      bottomPanel={
-        <KeyboardAvoidingView
-          style={{ flex: 1, backgroundColor: colors.secondary }}
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
-        >
-          <ScrollView
-            style={{ flex: 1, padding: 16 }}
-            contentContainerStyle={{ paddingBottom: 140 }}
-            keyboardShouldPersistTaps="handled"
+    <>
+      <StatusBar
+        barStyle="light-content" // "light-content" for light text/icons
+        backgroundColor={colors.secondary} // Android only
+      />
+      <SwipeablePanelLayout
+        expandedHeight={0.8 * 800}
+        collapsedHeight={0.45 * 800}
+        topPanel={
+          <MapView
+            ref={(r) => (mapRef.current = r)}
+            style={{ flex: 1 }}
+            region={region}
+            onRegionChangeComplete={(r) => setRegion(r)}
+            onPress={handleMapPress}
           >
-            {/* From input */}
-            <Text style={{ fontWeight: "600", marginBottom: 8, fontSize: 16 }}>From</Text>
-            <TextInput
-              style={{
-                borderWidth: 1,
-                borderColor: "#ddd",
-                marginBottom: 16,
-                padding: 12,
-                borderRadius: 12,
-                backgroundColor: "#fff",
-                shadowColor: "#000",
-                shadowOpacity: 0.06,
-                shadowRadius: 6,
-                elevation: 2,
-              }}
-              value={from.address}
-              placeholder="Tap map or type pickup address"
-              onFocus={() => setActiveField("from")}
-              onChangeText={(txt) => setFrom({ ...from, address: txt })}
-            />
-
-            {/* Points */}
-            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-              <Text style={{ fontWeight: "600", marginBottom: 8, fontSize: 16 }}>Points</Text>
-              <Text style={{ color: "#666", fontSize: 13 }}>{points.length} stops</Text>
-            </View>
-
-            {points.map((p, idx) => (
-              <View
-                key={idx}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginBottom: 12,
-                }}
-              >
-                <TextInput
-                  style={{
-                    flex: 1,
-                    borderWidth: 1,
-                    borderColor: activeField === idx ? colors.primary : "#ddd",
-                    padding: 12,
-                    borderRadius: 12,
-                    backgroundColor: "#fff",
-                    shadowColor: "#000",
-                    shadowOpacity: 0.04,
-                    shadowRadius: 4,
-                    elevation: 1,
-                  }}
-                  value={p.address}
-                  placeholder={`Point ${idx + 1} (tap map or type)`}
-                  onFocus={() => setActiveField(idx)}
-                  onChangeText={(txt) => {
-                    const updated = [...points];
-                    updated[idx] = { ...updated[idx], address: txt };
-                    setPoints(updated);
-                  }}
-                />
-
-                <TouchableOpacity onPress={() => deletePoint(idx)} style={{ marginLeft: 10 }}>
-                  <Ionicons name="trash" size={22} color="#e53935" />
-                </TouchableOpacity>
-              </View>
-            ))}
-
-            {/* Add Point button (custom) */}
-            <TouchableOpacity style={styles.addButton} onPress={addPoint}>
-              <Text style={styles.addText}>+ add Point</Text>
-            </TouchableOpacity>
-
-            {/* Done button */}
-            <View style={{ marginTop: 24 }}>
-              <Button
-                title="Done"
-                onPress={() => {
-                  setShowLocationScreen(false);
-                }}
-                disabled={false}
+            {/* From marker (distinct color) */}
+            {from?.lat ? (
+              <Marker
+                coordinate={{ latitude: from.lat, longitude: from.lng }}
+                pinColor={activeField === "from" ? "green" : "red"}
               />
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      }
-    />
+            ) : null}
+
+            {/* Points markers */}
+            {points.map((p, idx) =>
+              p?.lat ? (
+                <Marker
+                  key={idx}
+                  coordinate={{ latitude: p.lat, longitude: p.lng }}
+                  pinColor={activeField === idx ? "green" : "blue"}
+                />
+              ) : null
+            )}
+          </MapView>
+        }
+        bottomPanel={
+          <KeyboardAvoidingView
+            style={{ flex: 1, backgroundColor: colors.secondary }}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+          >
+            <ScrollView
+              style={{ flex: 1, padding: 16 }}
+              contentContainerStyle={{ paddingBottom: 140 }}
+              keyboardShouldPersistTaps="handled"
+            >
+              {/* From input */}
+              <Text style={{ fontWeight: "600", marginBottom: 8, fontSize: 16 }}>From</Text>
+              <TextInput
+                style={{
+                  borderWidth: 1,
+                  borderColor: "#ddd",
+                  marginBottom: 16,
+                  padding: 12,
+                  borderRadius: 12,
+                  backgroundColor: "#fff",
+                  shadowColor: "#000",
+                  shadowOpacity: 0.06,
+                  shadowRadius: 6,
+                  elevation: 2,
+                }}
+                value={from.address}
+                placeholder="Tap map or type pickup address"
+                onFocus={() => setActiveField("from")}
+                onChangeText={(txt) => setFrom({ ...from, address: txt })}
+              />
+
+              {/* Points */}
+              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <Text style={{ fontWeight: "600", marginBottom: 8, fontSize: 16 }}>Points</Text>
+                <Text style={{ color: "#666", fontSize: 13 }}>{points.length} stops</Text>
+              </View>
+
+              {points.map((p, idx) => (
+                <View
+                  key={idx}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginBottom: 12,
+                  }}
+                >
+                  <TextInput
+                    style={{
+                      flex: 1,
+                      borderWidth: 1,
+                      borderColor: activeField === idx ? colors.primary : "#ddd",
+                      padding: 12,
+                      borderRadius: 12,
+                      backgroundColor: "#fff",
+                      shadowColor: "#000",
+                      shadowOpacity: 0.04,
+                      shadowRadius: 4,
+                      elevation: 1,
+                    }}
+                    value={p.address}
+                    placeholder={`Point ${idx + 1} (tap map or type)`}
+                    onFocus={() => setActiveField(idx)}
+                    onChangeText={(txt) => {
+                      const updated = [...points];
+                      updated[idx] = { ...updated[idx], address: txt };
+                      setPoints(updated);
+                    }}
+                  />
+
+                  <TouchableOpacity onPress={() => deletePoint(idx)} style={{ marginLeft: 10 }}>
+                    <Ionicons name="trash" size={22} color="#e53935" />
+                  </TouchableOpacity>
+                </View>
+              ))}
+
+              {/* Add Point button (custom) */}
+              <TouchableOpacity style={styles.addButton} onPress={addPoint}>
+                <Text style={styles.addText}>+ add Point</Text>
+              </TouchableOpacity>
+
+              {/* Done button */}
+              <View style={{ marginTop: 24 }}>
+                <Button
+                  title="Done"
+                  onPress={() => {
+                    setShowLocationScreen(false);
+                  }}
+                  disabled={false}
+                />
+              </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        }
+      />
+    </>
   );
 };
 

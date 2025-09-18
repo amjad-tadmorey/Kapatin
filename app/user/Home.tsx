@@ -6,6 +6,7 @@ import { baseStyles, colors } from "@/utils/baseStyles";
 import { FormProvider, useForm } from "react-hook-form";
 import {
     Platform,
+    StatusBar,
     StyleSheet,
     Text,
     TouchableWithoutFeedback,
@@ -58,6 +59,10 @@ const Home: React.FC = () => {
 
     return (
         <View style={{ flex: 1 }}>
+            <StatusBar
+                barStyle="dark-content" // "light-content" for light text/icons
+                backgroundColor={colors.secondary} // Android only
+            />
             <SafeAreaView style={styles.safeArea}>
                 {!showLocationScreen && (
                     <KeyboardAwareScrollView
@@ -67,7 +72,8 @@ const Home: React.FC = () => {
                         enableOnAndroid
                         extraScrollHeight={Platform.OS === "ios" ? 40 : 20}
                     >
-                        <Text style={[baseStyles.heading, { color: colors.primary, marginBottom: 10 }]}>Kapatin</Text>
+                        <Text style={[baseStyles.heading, styles.logo]}>Kapatin</Text>
+
                         <FormProvider {...methods}>
 
                             <TouchableWithoutFeedback onPress={() => setShowLocationScreen(true)}>
@@ -119,6 +125,10 @@ const styles = StyleSheet.create({
     container: {
         padding: 20,
         flexGrow: 1,
+    },
+    logo: {
+        color: colors.primary,
+        marginBottom: 10,
     },
     locations: {
         padding: 20,

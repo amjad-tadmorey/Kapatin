@@ -5,7 +5,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity } from "react-native";
 import BackIcon from '../../../assets/order-detail-back.svg';
 
-
 const { height } = Dimensions.get("window");
 
 interface CancelCardProps {
