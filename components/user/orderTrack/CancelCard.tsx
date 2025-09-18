@@ -1,7 +1,6 @@
-import { updateOrder } from "@/api/order";
+import { cancelOrder } from "@/api/order";
 import Button from "@/components/shared/Button";
 import { baseStyles, colors } from "@/utils/baseStyles";
-import { getCancelOrderText } from "@/utils/helpers";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity } from "react-native";
 import BackIcon from '../../../assets/order-detail-back.svg';
@@ -11,16 +10,14 @@ const { height } = Dimensions.get("window");
 
 interface CancelCardProps {
     id: string;
-    statusUpdatedAt: Date;
-    status: string;
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
+    warningMessage: string | null;
+    feeCharge: number | null;
 }
 
-const CancelCard: React.FC<CancelCardProps> = ({ id, statusUpdatedAt, status, show, setShow }) => {
+const CancelCard: React.FC<CancelCardProps> = ({ id, show, setShow, warningMessage, feeCharge }) => {
     const [loading, setLoading] = useState(false)
-    console.log(statusUpdatedAt);
-    console.log(status);
 
     const translateY = useRef(new Animated.Value(height)).current; // start off-screen
     useEffect(() => {
@@ -42,11 +39,12 @@ const CancelCard: React.FC<CancelCardProps> = ({ id, statusUpdatedAt, status, sh
     const handleCancelOrder = async () => {
         setLoading(true);
         try {
-            await updateOrder(id, { status: 'canceled' });
+            await cancelOrder(id);
         } catch (err: any) {
             console.error(err || "Failed to cancel order");
         } finally {
             setLoading(false);
+            setShow(false)
         }
     };
 
@@ -59,17 +57,13 @@ const CancelCard: React.FC<CancelCardProps> = ({ id, statusUpdatedAt, status, sh
                 },
             ]}
         >
-
             <TouchableOpacity style={styles.backButton} onPress={() => setShow(false)}>
                 <BackIcon width={30} height={30} />
                 <Text style={[baseStyles.secHeader, { color: colors.primary, marginLeft: 8 }]}>Back</Text>
             </TouchableOpacity>
 
             <Text style={styles.text}>
-                {getCancelOrderText(
-                    status,
-                    statusUpdatedAt,
-                )}
+                {warningMessage} {feeCharge !== null ? `(Fee: $${feeCharge})` : ""}
             </Text>
 
             <Button title={loading ? "Caneling" : "Cancel"} variant="dark" onPress={handleCancelOrder} disabled={loading} />

@@ -3,6 +3,18 @@ import { store } from "../redux/store";
 import { CreateOrderPayload, IOrder, UpdateOrderPayload } from "../types/order";
 import { axiosInstance } from "./constants";
 
+
+
+export interface CancelOrderResponse {
+  message: string;
+  feeCharge: number;
+}
+
+export interface CancelRequestResponse {
+  warningMessage: string;
+  feeCharge: number;
+}
+
 export const createOrder = async (payload: CreateOrderPayload): Promise<IOrder> => {
   try {
 
@@ -40,6 +52,52 @@ export const updateOrder = async (
     return res.data;
   } catch (err: any) {
     throw new Error(err.message || "Failed to update order");
+  }
+};
+
+export const cancelRequest = async (
+  orderId: string
+): Promise<CancelRequestResponse> => {
+  try {
+    const state = store.getState();
+    const token = state.auth.token;
+
+    const res = await axiosInstance.patch<CancelRequestResponse>(
+      `/orders/cancel-request/${orderId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return res.data;
+  } catch (err: any) {
+    throw new Error(err.message || "Failed to request order cancelation");
+  }
+};
+
+export const cancelOrder = async (
+  orderId: string
+): Promise<CancelOrderResponse> => {
+  try {
+    const state = store.getState();
+    const token = state.auth.token;
+
+    const res = await axiosInstance.patch<CancelOrderResponse>(
+      `/orders/cancel-order/${orderId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return res.data;
+  } catch (err: any) {
+    throw new Error(err.message || "Failed to cancel order");
   }
 };
 
